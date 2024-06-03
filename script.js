@@ -6,8 +6,15 @@ const game = document.getElementById('game');
 const jumpButton = document.getElementById('jumpButton');
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth < 800 ? window.innerWidth - 20 : 800;
-    canvas.height = window.innerHeight < 400 ? window.innerHeight - 150 : 200;
+    if (window.innerWidth < window.innerHeight) {
+        // Portrait mode
+        canvas.width = window.innerWidth * 0.9;
+        canvas.height = canvas.width * 0.5;
+    } else {
+        // Landscape mode
+        canvas.width = 800;
+        canvas.height = 200;
+    }
 }
 
 window.addEventListener('resize', resizeCanvas);

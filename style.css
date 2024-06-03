@@ -15,8 +15,8 @@ body {
 
 #gameCanvas {
     border: 1px solid #000;
-    width: 100%;
-    max-width: 800px;
+    width: 90%;  /* Adjust width for portrait mode */
+    max-width: 400px;
     height: auto;
 }
 
@@ -31,20 +31,57 @@ body {
     font-size: 24px;
 }
 
-#controls button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 5px;
+/* Common button styles */
+button {
+    padding: 12px 24px;
+    font-size: 18px;
+    margin: 8px;
     cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    transition: background-color 0.3s, transform 0.3s;
+    width: 150px;  /* Set a fixed width */
+    height: 50px;  /* Set a fixed height */
+    box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
 }
 
-@media (max-width: 600px) {
-    #score {
-        font-size: 18px;
-    }
+/* Button hover and active states */
+button:hover {
+    background-color: #45a049; /* Darker green */
+}
 
-    #controls button {
-        padding: 8px 16px;
-        font-size: 14px;
+button:active {
+    transform: scale(0.95); /* Slightly smaller on click */
+}
+
+/* Responsive button styles */
+@media (max-width: 600px) {
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        margin: 6px;
+        width: 100px;
+        height: 40px;
     }
+}
+
+#controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
 }
