@@ -16,10 +16,13 @@
     <div id="game" style="display:none;">
         <canvas id="gameCanvas"></canvas>
         <div id="score">Score: 0</div>
-        <button id="pauseButton" onclick="pauseGame()">Pause</button>
-        <button id="playButton" onclick="playGame()" style="display:none;">Play</button>
-        <button id="restartButton" onclick="restartGame()">Restart</button>
-        <button id="menuButton" onclick="showMenu()">Main Menu</button>
+        <div id="controls">
+            <button id="jumpButton" onclick="jump()">Jump</button>
+            <button id="pauseButton" onclick="pauseGame()">Pause</button>
+            <button id="playButton" onclick="playGame()" style="display:none;">Play</button>
+            <button id="restartButton" onclick="restartGame()">Restart</button>
+            <button id="menuButton" onclick="showMenu()">Main Menu</button>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

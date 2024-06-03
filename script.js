@@ -3,9 +3,15 @@ const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score');
 const menu = document.getElementById('menu');
 const game = document.getElementById('game');
+const jumpButton = document.getElementById('jumpButton');
 
-canvas.width = 800;
-canvas.height = 200;
+function resizeCanvas() {
+    canvas.width = window.innerWidth < 800 ? window.innerWidth - 20 : 800;
+    canvas.height = window.innerHeight < 400 ? window.innerHeight - 150 : 200;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 const dinoImg = new Image();
 dinoImg.src = 'images/dino.png';
@@ -15,7 +21,7 @@ cactusImg.src = 'images/cactus.png';
 
 let dino = {
     x: 50,
-    y: 150,
+    y: canvas.height - 50,
     width: 50,
     height: 50,
     dy: 0,
@@ -74,7 +80,6 @@ function updateObstacles() {
             score++;
             scoreDisplay.innerText = 'Score: ' + score;
 
-            // Increase speed gradually
             if (score % 10 === 0) {
                 gameSpeed += 0.2;
             }
@@ -126,6 +131,8 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+jumpButton.addEventListener('touchstart', jump);
+
 function startGame(bgColor) {
     backgroundColor = bgColor;
     menu.style.display = 'none';
@@ -135,7 +142,7 @@ function startGame(bgColor) {
     score = 0;
     frame = 0;
     gameSpeed = 3;
-    dino.y = 150;
+    dino.y = canvas.height - 50;
     dino.dy = 0;
     obstacles = [];
     scoreDisplay.innerText = 'Score: 0';
@@ -161,7 +168,7 @@ function restartGame() {
     score = 0;
     frame = 0;
     gameSpeed = 3;
-    dino.y = 150;
+    dino.y = canvas.height - 50;
     dino.dy = 0;
     obstacles = [];
     scoreDisplay.innerText = 'Score: 0';
@@ -169,6 +176,7 @@ function restartGame() {
 }
 
 function showMenu() {
+    gameOver = true; // Stop the game loop
     menu.style.display = 'flex';
     game.style.display = 'none';
 }
