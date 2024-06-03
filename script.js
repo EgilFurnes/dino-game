@@ -49,7 +49,7 @@ let obstacles = [];
 
 const dinoFrameWidth = 50;
 const dinoFrameHeight = 50;
-const totalDinoFrames = 4;
+const totalDinoFrames = 8;
 let dinoFrame = 0;
 let dinoAnimationSpeed = 5;
 
