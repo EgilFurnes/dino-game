@@ -113,16 +113,37 @@ function updateObstacles() {
 
 function detectCollision() {
     for (let i = 0; i < obstacles.length; i++) {
-        if (dino.x < obstacles[i].x + obstacles[i].width &&
-            dino.x + dino.width > obstacles[i].x &&
-            dino.y < obstacles[i].y + obstacles[i].height &&
-            dino.y + dino.height > obstacles[i].y) {
+        const hitboxPaddingX = 25;
+        const hitboxPaddingY = 25;
+
+        if (dino.x < obstacles[i].x + obstacles[i].width - hitboxPaddingX &&
+            dino.x + dino.width > obstacles[i].x + hitboxPaddingX &&
+            dino.y < obstacles[i].y + obstacles[i].height - hitboxPaddingY &&
+            dino.y + dino.height > obstacles[i].y + hitboxPaddingY) {
             gameOver = true;
-            alert('Game Over! Score: ' + score);
+            displayGameOverMessage(); // New function to display game over message
             return;
         }
     }
 }
+
+function displayGameOverMessage() {
+    const gameOverMessage = document.createElement('div');
+    gameOverMessage.id = 'gameOverMessage';
+    gameOverMessage.innerText = 'Game Over! Press R to Restart';
+    gameOverMessage.style.position = 'absolute';
+    gameOverMessage.style.top = '50%';
+    gameOverMessage.style.left = '50%';
+    gameOverMessage.style.transform = 'translate(-50%, -50%)';
+    gameOverMessage.style.padding = '20px';
+    gameOverMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    gameOverMessage.style.color = 'white';
+    gameOverMessage.style.fontSize = '24px';
+    gameOverMessage.style.textAlign = 'center';
+    document.body.appendChild(gameOverMessage);
+}
+
+
 
 function jump() {
     if (dino.grounded && !gameOver) {
@@ -152,8 +173,19 @@ function gameLoop() {
 document.addEventListener('keydown', function(e) {
     if (e.code === 'Space') {
         jump();
+    } else if (e.code === 'KeyP') {
+        if (gamePaused) {
+            playGame();
+        } else {
+            pauseGame();
+        }
+    } else if (e.code === 'KeyR') {
+        restartGame();
+    } else if (e.code === 'KeyM') {
+        showMenu();
     }
 });
+
 
 jumpButton.addEventListener('touchstart', jump);
 
@@ -196,6 +228,20 @@ function restartGame() {
     dino.dy = 0;
     obstacles = [];
     scoreDisplay.innerText = 'Score: 0';
+    removeGameOverMessage();
+    gameLoop();
+}
+
+function pauseGame() {
+    gamePaused = true;
+    document.getElementById('pauseButton').style.display = 'none';
+    document.getElementById('playButton').style.display = 'block';
+}
+
+function playGame() {
+    gamePaused = false;
+    document.getElementById('pauseButton').style.display = 'block';
+    document.getElementById('playButton').style.display = 'none';
     gameLoop();
 }
 
@@ -203,7 +249,16 @@ function showMenu() {
     gameOver = true; // Stop the game loop
     menu.style.display = 'flex';
     game.style.display = 'none';
+    removeGameOverMessage();
 }
+
+function removeGameOverMessage() {
+    const gameOverMessage = document.getElementById('gameOverMessage');
+    if (gameOverMessage) {
+        gameOverMessage.remove();
+    }
+}
+
 
 // Initial call to show the menu
 showMenu();
