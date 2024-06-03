@@ -4,14 +4,22 @@ const scoreDisplay = document.getElementById('score');
 const menu = document.getElementById('menu');
 const game = document.getElementById('game');
 const jumpButton = document.getElementById('jumpButton');
+const topScoresList = document.querySelector('#topScores ul');
+const usernameContainer = document.getElementById('usernameContainer');
+const usernameInput = document.getElementById('usernameInput');
+
+let username = '';
+let score = 0;
+let gameOver = false;
+let gamePaused = false;
+let frame = 0;
+let gameSpeed = 3;
 
 function resizeCanvas() {
     if (window.innerWidth < window.innerHeight) {
-        // Portrait mode
         canvas.width = window.innerWidth * 0.9;
         canvas.height = canvas.width * 0.5;
     } else {
-        // Landscape mode
         canvas.width = 800;
         canvas.height = 200;
     }
@@ -38,29 +46,22 @@ let dino = {
 };
 
 let obstacles = [];
-let frame = 0;
-let gameSpeed = 3;
-let score = 0;
-let gameOver = false;
-let gamePaused = false;
-let backgroundColor = 'lightgreen';
 
-let dinoFrame = 0;
 const dinoFrameWidth = 50;
 const dinoFrameHeight = 50;
 const totalDinoFrames = 4;
+let dinoFrame = 0;
 let dinoAnimationSpeed = 5;
 
 function drawDino() {
     ctx.drawImage(
         dinoRunningImg,
-        dinoFrame * dinoFrameWidth, 0, // Source X and Y (top-left corner of each frame)
-        dinoFrameWidth, dinoFrameHeight, // Source width and height (size of each frame)
-        dino.x, dino.y, // Destination X and Y
-        dino.width, dino.height // Destination width and height
+        dinoFrame * dinoFrameWidth, 0,
+        dinoFrameWidth, dinoFrameHeight,
+        dino.x, dino.y,
+        dino.width, dino.height
     );
 
-    // Update the frame
     if (frame % dinoAnimationSpeed === 0) {
         dinoFrame = (dinoFrame + 1) % totalDinoFrames;
     }
@@ -113,37 +114,19 @@ function updateObstacles() {
 
 function detectCollision() {
     for (let i = 0; i < obstacles.length; i++) {
-        const hitboxPaddingX = 25;
-        const hitboxPaddingY = 25;
+        const hitboxPaddingX = 10;
+        const hitboxPaddingY = 10;
 
         if (dino.x < obstacles[i].x + obstacles[i].width - hitboxPaddingX &&
             dino.x + dino.width > obstacles[i].x + hitboxPaddingX &&
             dino.y < obstacles[i].y + obstacles[i].height - hitboxPaddingY &&
             dino.y + dino.height > obstacles[i].y + hitboxPaddingY) {
             gameOver = true;
-            displayGameOverMessage(); // New function to display game over message
+            displayGameOverMessage();
             return;
         }
     }
 }
-
-function displayGameOverMessage() {
-    const gameOverMessage = document.createElement('div');
-    gameOverMessage.id = 'gameOverMessage';
-    gameOverMessage.innerText = 'Game Over! Press R to Restart';
-    gameOverMessage.style.position = 'absolute';
-    gameOverMessage.style.top = '50%';
-    gameOverMessage.style.left = '50%';
-    gameOverMessage.style.transform = 'translate(-50%, -50%)';
-    gameOverMessage.style.padding = '20px';
-    gameOverMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    gameOverMessage.style.color = 'white';
-    gameOverMessage.style.fontSize = '24px';
-    gameOverMessage.style.textAlign = 'center';
-    document.body.appendChild(gameOverMessage);
-}
-
-
 
 function jump() {
     if (dino.grounded && !gameOver) {
@@ -186,8 +169,17 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-
 jumpButton.addEventListener('touchstart', jump);
+
+function setUsername() {
+    username = usernameInput.value.trim();
+    if (username) {
+        usernameContainer.style.display = 'none';
+        menu.style.display = 'flex';
+    } else {
+        alert('Please enter a username.');
+    }
+}
 
 function startGame(bgColor) {
     backgroundColor = bgColor;
@@ -232,24 +224,23 @@ function restartGame() {
     gameLoop();
 }
 
-function pauseGame() {
-    gamePaused = true;
-    document.getElementById('pauseButton').style.display = 'none';
-    document.getElementById('playButton').style.display = 'block';
-}
-
-function playGame() {
-    gamePaused = false;
-    document.getElementById('pauseButton').style.display = 'block';
-    document.getElementById('playButton').style.display = 'none';
-    gameLoop();
-}
-
 function showMenu() {
-    gameOver = true; // Stop the game loop
+    gameOver = true;
     menu.style.display = 'flex';
     game.style.display = 'none';
     removeGameOverMessage();
+}
+
+function backToLevelSelector() {
+    gameOver = true;
+    menu.style.display = 'flex';
+    game.style.display = 'none';
+    removeGameOverMessage();
+}
+
+function backToUsername() {
+    usernameContainer.style.display = 'flex';
+    menu.style.display = 'none';
 }
 
 function removeGameOverMessage() {
@@ -259,6 +250,54 @@ function removeGameOverMessage() {
     }
 }
 
+function displayGameOverMessage() {
+    const gameOverMessage = document.createElement('div');
+    gameOverMessage.id = 'gameOverMessage';
+    gameOverMessage.innerText = 'Game Over! Press R to Restart';
 
-// Initial call to show the menu
+    gameOverMessage.style.position = 'absolute';
+    gameOverMessage.style.top = '10px';
+    gameOverMessage.style.left = '10px';
+    gameOverMessage.style.padding = '5px';
+    gameOverMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    gameOverMessage.style.color = 'white';
+    gameOverMessage.style.fontSize = '12px';
+    gameOverMessage.style.fontFamily = '"Press Start 2P", cursive';
+    gameOverMessage.style.textAlign = 'left';
+    gameOverMessage.style.whiteSpace = 'nowrap';
+
+    document.body.appendChild(gameOverMessage);
+
+    submitScore(username, score);
+}
+
+async function submitScore(username, score) {
+    const response = await fetch('http://localhost:3000/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, score }),
+    });
+
+    if (response.ok) {
+        fetchLeaderboard();
+    }
+}
+
+async function fetchLeaderboard() {
+    const response = await fetch('http://localhost:3000/leaderboard');
+    const { topScores } = await response.json();
+
+    topScoresList.innerHTML = '';
+
+    topScores.forEach(score => {
+        const li = document.createElement('li');
+        li.textContent = `${score.username}: ${score.score}`;
+        topScoresList.appendChild(li);
+    });
+}
+
+// Initial call to show the menu and fetch leaderboard
 showMenu();
+fetchLeaderboard();

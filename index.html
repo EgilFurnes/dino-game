@@ -7,11 +7,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="menu">
+    <div id="usernameContainer">
+        <h1>Enter Your Name</h1>
+        <input type="text" id="usernameInput" placeholder="Your name">
+        <button onclick="setUsername()">Play</button>
+    </div>
+    <div id="menu" style="display:none;">
         <h1>Select Level</h1>
         <button onclick="startGame('lightgreen')">Green Sky</button>
         <button onclick="startGame('lightblue')">Blue Sky</button>
         <button onclick="startGame('lightyellow')">Yellow Sky</button>
+        <button onclick="backToUsername()">Back</button>
     </div>
     <div id="game" style="display:none;">
         <canvas id="gameCanvas"></canvas>
@@ -21,7 +27,14 @@
             <button id="pauseButton" onclick="pauseGame()">Pause</button>
             <button id="playButton" onclick="playGame()" style="display:none;">Play</button>
             <button id="restartButton" onclick="restartGame()">Restart</button>
-            <button id="menuButton" onclick="showMenu()">Main Menu</button>
+            <button id="backButton" onclick="backToLevelSelector()">Back</button>
+        </div>
+    </div>
+    <div id="leaderboard">
+        <h2>Leaderboard</h2>
+        <div id="topScores">
+            <h3>Top 5 Scores</h3>
+            <ul></ul>
         </div>
     </div>
     <script src="script.js"></script>
