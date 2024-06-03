@@ -20,8 +20,8 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-const dinoImg = new Image();
-dinoImg.src = 'images/dino.png';
+const dinoRunningImg = new Image();
+dinoRunningImg.src = 'images/dino_running.png';
 
 const cactusImg = new Image();
 cactusImg.src = 'images/cactus.png';
@@ -45,8 +45,25 @@ let gameOver = false;
 let gamePaused = false;
 let backgroundColor = 'lightgreen';
 
+let dinoFrame = 0;
+const dinoFrameWidth = 50;
+const dinoFrameHeight = 50;
+const totalDinoFrames = 4;
+let dinoAnimationSpeed = 5;
+
 function drawDino() {
-    ctx.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+    ctx.drawImage(
+        dinoRunningImg,
+        dinoFrame * dinoFrameWidth, 0, // Source X and Y (top-left corner of each frame)
+        dinoFrameWidth, dinoFrameHeight, // Source width and height (size of each frame)
+        dino.x, dino.y, // Destination X and Y
+        dino.width, dino.height // Destination width and height
+    );
+
+    // Update the frame
+    if (frame % dinoAnimationSpeed === 0) {
+        dinoFrame = (dinoFrame + 1) % totalDinoFrames;
+    }
 }
 
 function drawObstacle() {
