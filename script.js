@@ -49,7 +49,7 @@ let obstacles = [];
 
 const dinoFrameWidth = 50;
 const dinoFrameHeight = 50;
-const totalDinoFrames = 8;
+const totalDinoFrames = 8; // Update to the number of frames in your new sprite sheet
 let dinoFrame = 0;
 let dinoAnimationSpeed = 5;
 
@@ -176,6 +176,7 @@ function setUsername() {
     if (username) {
         usernameContainer.style.display = 'none';
         menu.style.display = 'flex';
+        loadLeaderboard();
     } else {
         alert('Please enter a username.');
     }
@@ -213,6 +214,7 @@ function playGame() {
 function restartGame() {
     gameOver = false;
     gamePaused = false;
+    saveScore(score);
     score = 0;
     frame = 0;
     gameSpeed = 3;
@@ -267,37 +269,26 @@ function displayGameOverMessage() {
     gameOverMessage.style.whiteSpace = 'nowrap';
 
     document.body.appendChild(gameOverMessage);
-
-    submitScore(username, score);
 }
 
-async function submitScore(username, score) {
-    const response = await fetch('http://localhost:3000/submit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, score }),
-    });
-
-    if (response.ok) {
-        fetchLeaderboard();
-    }
+function saveScore(newScore) {
+    let scores = JSON.parse(localStorage.getItem('scores')) || [];
+    scores.push(newScore);
+    scores.sort((a, b) => b - a); // Sort descending
+    if (scores.length > 5) scores = scores.slice(0, 5); // Keep only top 5
+    localStorage.setItem('scores', JSON.stringify(scores));
+    loadLeaderboard();
 }
 
-async function fetchLeaderboard() {
-    const response = await fetch('http://localhost:3000/leaderboard');
-    const { topScores } = await response.json();
-
+function loadLeaderboard() {
+    const scores = JSON.parse(localStorage.getItem('scores')) || [];
     topScoresList.innerHTML = '';
-
-    topScores.forEach(score => {
+    scores.forEach(score => {
         const li = document.createElement('li');
-        li.textContent = `${score.username}: ${score.score}`;
+        li.textContent = score;
         topScoresList.appendChild(li);
     });
 }
 
-// Initial call to show the menu and fetch leaderboard
+// Initial call to show the menu
 showMenu();
-fetchLeaderboard();
